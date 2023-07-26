@@ -55,7 +55,6 @@ contract ERC1155Cloneable is ERC1155 {
     }
 
     function burn(address account, uint256 id, uint256 amount) public onlyAdmin {
-    
         _burn(account, id, amount);
     }
 
@@ -83,4 +82,3 @@ contract ERC1155Cloneable is ERC1155 {
         return interfaceId == type(IERC1155).interfaceId || super.supportsInterface(interfaceId);
     }
 }
-

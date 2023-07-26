@@ -2,21 +2,32 @@
 
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/proxy/Clones.sol";
 
-contract ERC721Cloneable is ERC721 {
-    address public owner;
+contract ERC721Cloneable is ERC721Enumerable, Ownable {
     mapping(address => bool) private _admins;
+    string private _baseURI_;
 
-    // Token ID => URI mapping
-    mapping(uint256 => string) private _tokenURIs;
+    // Token name
+    string private _name;
 
-    constructor() ERC721("") {}
+    // Token symbol
+    string private _symbol;
 
-    modifier onlyOwner() {
-        require(msg.sender == owner, "Only owner");
-        _;
+    constructor() ERC721("Name", "Symbol") Ownable() {}
+
+    function initialize(string memory name_, string memory symbol_, string memory uri, address admin) external {
+        _baseURI_ = uri;
+        _admins[admin] = true;
+        _name = name_;
+        _symbol = symbol_;
+    }
+
+    function setBaseURI(string memory uri) external onlyOwner {
+        _baseURI_ = uri;
     }
 
     modifier onlyAdmin() {
@@ -24,30 +35,24 @@ contract ERC721Cloneable is ERC721 {
         _;
     }
 
-    function initialize(string memory _uri, address _admin, address _owner) external {
-        _setURI(_uri);
-        _admins[_admin] = true;
-        owner = _owner;
+    /**
+     * @dev See {IERC721Metadata-name}.
+     */
+    function name() public view override returns (string memory) {
+        return _name;
     }
 
-    // Create new token
-    function createToken(uint256 _id, string memory _uri) external onlyAdmin {
-        require(!_exists(_id), "Token already exists");
-
-        _mint(msg.sender, _id);
-        _setTokenURI(_id, _uri);
-    }
-
-    function setTokenURI(uint256 _id, string memory _uri) external onlyAdmin {
-        require(_exists(_id), "Token does not exist");
-
-        _setTokenURI(_id, _uri);
+    /**
+     * @dev See {IERC721Metadata-symbol}.
+     */
+    function symbol() public view override returns (string memory) {
+        return _symbol;
     }
 
     function tokenURI(uint256 _id) public view override returns (string memory) {
         require(_exists(_id), "Token does not exist");
 
-        return _tokenURIs[_id];
+        return string(abi.encodePacked(_baseURI_, Strings.toString(_id)));
     }
 
     function addAdmin(address _admin) external onlyOwner {

@@ -3,10 +3,10 @@ pragma solidity ^0.8.13;
 
 import "forge-std/Test.sol";
 import "../src/ERC1155Cloneable.sol";
-import "../src/ERC1155CloneFactory.sol";
+import "../src/CloneFactory.sol";
 
 contract ERC1155CloneTest is Test {
-    ERC1155Factory public factory;
+    CloneFactory public factory;
     ERC1155Cloneable public cloneable;
 
     // set users
@@ -19,12 +19,12 @@ contract ERC1155CloneTest is Test {
     address public tronicAdmin = address(0x6);
 
     function setUp() public {
-        factory = new ERC1155Factory(tronicAdmin);
+        factory = new CloneFactory(tronicAdmin);
         cloneable = new ERC1155Cloneable();
     }
 
     function testCreateClone() public {
-        address clone = factory.createClone("http://example.com1/", admin1);
+        address clone = factory.cloneERC1155("http://example.com1/", admin1);
         console.log("clone address: ", clone);
 
         assertEq(ERC1155Cloneable(clone).uri(1), "http://example.com1/");
@@ -32,7 +32,7 @@ contract ERC1155CloneTest is Test {
     }
 
     function testMintClone() public {
-        address cloneAddress = factory.createClone("http://example.com2/", admin1);
+        address cloneAddress = factory.cloneERC1155("http://example.com2/", admin1);
 
         ERC1155Cloneable clone = ERC1155Cloneable(cloneAddress);
 
@@ -57,7 +57,7 @@ contract ERC1155CloneTest is Test {
 
     // Test admin roles
     function testAdminRoles() public {
-        address clone = factory.createClone("uri", admin1);
+        address clone = factory.cloneERC1155("uri", admin1);
 
         ERC1155Cloneable cloneContract = ERC1155Cloneable(clone);
 
@@ -66,7 +66,7 @@ contract ERC1155CloneTest is Test {
 
     // Test new token types
     function testCreateTokenType() public {
-        address clone = factory.createClone("uri", admin1);
+        address clone = factory.cloneERC1155("uri", admin1);
 
         vm.prank(admin1);
         ERC1155Cloneable(clone).createType(4, "http://example.com");
@@ -76,7 +76,7 @@ contract ERC1155CloneTest is Test {
 
     // Test setting fungible URI
     function testSetFungibleURI() public {
-        address clone = factory.createClone("uri", admin1);
+        address clone = factory.cloneERC1155("uri", admin1);
 
         vm.prank(admin1);
         ERC1155Cloneable(clone).setFungibleURI(1, "http://fungible.com");
@@ -86,7 +86,7 @@ contract ERC1155CloneTest is Test {
 
     // Test safe transfer
     function testSafeTransfer() public {
-        address clone = factory.createClone("uri", admin1);
+        address clone = factory.cloneERC1155("uri", admin1);
 
         vm.prank(admin1);
         ERC1155Cloneable(clone).mint(user1, 1, 10);
