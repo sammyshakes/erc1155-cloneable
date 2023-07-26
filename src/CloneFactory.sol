@@ -42,7 +42,10 @@ contract CloneFactory {
         emit CloneCreated(erc1155cloneAddress, uri);
     }
 
-    function cloneERC721(string memory name, string memory symbol, string memory uri, address admin) external returns (address erc721CloneAddress){
+    function cloneERC721(string memory name, string memory symbol, string memory uri, address admin)
+        external
+        returns (address erc721CloneAddress)
+    {
         erc721CloneAddress = Clones.clone(address(erc721Implementation));
         ERC721Cloneable erc721Clone = ERC721Cloneable(erc721CloneAddress);
         erc721Clone.initialize(name, symbol, uri, admin);
