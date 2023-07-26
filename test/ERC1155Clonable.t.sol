@@ -3,6 +3,7 @@ pragma solidity ^0.8.13;
 
 import "forge-std/Test.sol";
 import "../src/ERC1155Cloneable.sol";
+import "../src/ERC721Cloneable.sol";
 import "../src/CloneFactory.sol";
 
 contract ERC1155CloneTest is Test {
@@ -97,5 +98,47 @@ contract ERC1155CloneTest is Test {
 
         assertEq(ERC1155Cloneable(clone).balanceOf(user1, 1), 5);
         assertEq(ERC1155Cloneable(clone).balanceOf(user2, 1), 5);
+    }
+
+    // Clone ERC721 token
+    function testCloneERC721() public {
+        string memory name = "MyToken";
+        string memory symbol = "MTK";
+
+        address clone = factory.cloneERC721(name, symbol, "http://example.com/", admin1);
+
+        ERC721Cloneable token = ERC721Cloneable(clone);
+
+        assertEq(token.name(), name);
+        assertEq(token.symbol(), symbol);
+    }
+
+    // Mint ERC721 token
+    function testMintBurnERC721() public {
+        address clone = factory.cloneERC721("Name", "SYM", "http://example.com/", admin1);
+
+        vm.startPrank(admin1);
+        ERC721Cloneable(clone).mint(user1, 1);
+
+        assertEq(ERC721Cloneable(clone).ownerOf(1), user1);
+
+        ERC721Cloneable(clone).burn(1);
+
+        vm.expectRevert();
+        ERC721Cloneable(clone).ownerOf(1);
+        vm.stopPrank();
+    }
+
+    // Test ERC721 approvals
+    function testERC721Approve() public {
+        address clone = factory.cloneERC721("Name", "SYM", "http://example.com/", admin1);
+
+        vm.prank(admin1);
+        ERC721Cloneable(clone).mint(user1, 1);
+
+        vm.prank(user1);
+        ERC721Cloneable(clone).approve(user2, 1);
+
+        // Test approval
     }
 }

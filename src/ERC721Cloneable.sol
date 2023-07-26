@@ -26,6 +26,14 @@ contract ERC721Cloneable is ERC721Enumerable, Ownable {
         _symbol = symbol_;
     }
 
+    function mint(address to, uint256 tokenId) public onlyAdmin {
+        _mint(to, tokenId);
+    }
+
+    function burn(uint256 tokenId) public onlyAdmin {
+        _burn(tokenId);
+    }
+
     function setBaseURI(string memory uri) external onlyOwner {
         _baseURI_ = uri;
     }
