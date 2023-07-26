@@ -30,15 +30,15 @@ contract TokenboundAccount is SimpleERC6551Account, IERC721Receiver, IERC1155Rec
         return this.onERC1155BatchReceived.selector;
     }
 
-    function transferToken(address token, uint256 id, uint256 amount) external {
+    function transferToken(address token, uint256 id, uint256 amount, address to) external {
         require(msg.sender == owner(), "Not owner");
 
         if (IERC165(token).supportsInterface(type(IERC1155).interfaceId)) {
-            IERC1155(token).safeTransferFrom(address(this), msg.sender, id, amount, "");
+            IERC1155(token).safeTransferFrom(address(this), to, id, amount, "");
         } else if (IERC165(token).supportsInterface(type(IERC721).interfaceId)) {
-            IERC721(token).transferFrom(address(this), msg.sender, id);
+            IERC721(token).transferFrom(address(this), to, id);
         } else if (IERC165(token).supportsInterface(type(IERC20).interfaceId)) {
-            IERC20(token).transfer(msg.sender, amount);
+            IERC20(token).transfer(to, amount);
         }
     }
 }

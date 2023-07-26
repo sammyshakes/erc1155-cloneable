@@ -3,7 +3,7 @@
 pragma solidity ^0.8.0;
 
 import "./ERC1155Cloneable.sol";
-import "./ERC721Cloneable.sol";
+import "./ERC721CloneableTBA.sol";
 import "./TokenboundAccount.sol";
 import "@openzeppelin/contracts/proxy/Clones.sol";
 
@@ -14,7 +14,7 @@ contract CloneFactory {
 
     TokenboundAccount public accountImplementation;
 
-    ERC721Cloneable public erc721Implementation;
+    ERC721CloneableTBA public erc721Implementation;
     ERC1155Cloneable public erc1155implementation;
 
     mapping(uint256 => address) public erc1155Clones;
@@ -25,7 +25,7 @@ contract CloneFactory {
 
     constructor(address _tronicAdmin, address _erc721Implementation, address _erc1155implementation) {
         erc1155implementation = ERC1155Cloneable(_erc1155implementation);
-        erc721Implementation = ERC721Cloneable(_erc721Implementation);
+        erc721Implementation = ERC721CloneableTBA(_erc721Implementation);
         tronicAdmin = _tronicAdmin;
     }
 
@@ -53,7 +53,7 @@ contract CloneFactory {
         returns (address erc721CloneAddress)
     {
         erc721CloneAddress = Clones.clone(address(erc721Implementation));
-        ERC721Cloneable erc721Clone = ERC721Cloneable(erc721CloneAddress);
+        ERC721CloneableTBA erc721Clone = ERC721CloneableTBA(erc721CloneAddress);
         erc721Clone.initialize(name, symbol, uri, admin);
 
         // Emit event, store clone, etc

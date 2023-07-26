@@ -3,14 +3,14 @@ pragma solidity ^0.8.13;
 
 import "forge-std/Test.sol";
 import "../src/ERC1155Cloneable.sol";
-import "../src/ERC721Cloneable.sol";
+import "../src/ERC721CloneableTBA.sol";
 import "../src/CloneFactory.sol";
 import "../src/TokenboundAccount.sol";
 
 contract ERC1155CloneTest is Test {
     CloneFactory public factory;
     ERC1155Cloneable public erc1155cloneable;
-    ERC721Cloneable public erc721cloneable;
+    ERC721CloneableTBA public erc721cloneable;
     TokenboundAccount public tbaCloneable;
 
     // set users
@@ -25,7 +25,7 @@ contract ERC1155CloneTest is Test {
     function setUp() public {
         tbaCloneable = new TokenboundAccount();
         erc1155cloneable = new ERC1155Cloneable();
-        erc721cloneable = new ERC721Cloneable(payable(address(tbaCloneable)));
+        erc721cloneable = new ERC721CloneableTBA(payable(address(tbaCloneable)));
         factory = new CloneFactory(tronicAdmin, address(erc721cloneable), address(erc1155cloneable));
     }
 
@@ -112,7 +112,7 @@ contract ERC1155CloneTest is Test {
 
         address clone = factory.cloneERC721(name, symbol, "http://example.com/", admin1);
 
-        ERC721Cloneable token = ERC721Cloneable(clone);
+        ERC721CloneableTBA token = ERC721CloneableTBA(clone);
 
         assertEq(token.name(), name);
         assertEq(token.symbol(), symbol);
@@ -123,14 +123,14 @@ contract ERC1155CloneTest is Test {
     //     address clone = factory.cloneERC721("Name", "SYM", "http://example.com/", admin1);
 
     //     vm.startPrank(admin1);
-    //     ERC721Cloneable(clone).mint(user1, 1);
+    //     ERC721CloneableTBA(clone).mint(user1, 1);
 
-    //     assertEq(ERC721Cloneable(clone).ownerOf(1), user1);
+    //     assertEq(ERC721CloneableTBA(clone).ownerOf(1), user1);
 
-    //     ERC721Cloneable(clone).burn(1);
+    //     ERC721CloneableTBA(clone).burn(1);
 
     //     vm.expectRevert();
-    //     ERC721Cloneable(clone).ownerOf(1);
+    //     ERC721CloneableTBA(clone).ownerOf(1);
     //     vm.stopPrank();
     // }
 
@@ -139,12 +139,12 @@ contract ERC1155CloneTest is Test {
     //     address clone = factory.cloneERC721("Name", "SYM", "http://example.com/", admin1);
 
     //     vm.prank(admin1);
-    //     ERC721Cloneable(clone).mint(user1, 1);
+    //     ERC721CloneableTBA(clone).mint(user1, 1);
 
     //     vm.prank(user1);
-    //     ERC721Cloneable(clone).approve(user2, 1);
+    //     ERC721CloneableTBA(clone).approve(user2, 1);
 
-    //     assertEq(ERC721Cloneable(clone).getApproved(1), user2);
+    //     assertEq(ERC721CloneableTBA(clone).getApproved(1), user2);
 
     //     // Test approval
     // }

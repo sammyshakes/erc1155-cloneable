@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/proxy/Clones.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 
-contract ERC721Cloneable is ERC721Enumerable, Ownable {
+contract ERC721CloneableTBA is ERC721Enumerable, Ownable {
     ERC6551Registry public registry;
     TokenboundAccount public accountImplementation;
 
