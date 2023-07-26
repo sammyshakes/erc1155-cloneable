@@ -139,6 +139,8 @@ contract ERC1155CloneTest is Test {
         vm.prank(user1);
         ERC721Cloneable(clone).approve(user2, 1);
 
+        assertEq(ERC721Cloneable(clone).getApproved(1), user2);
+
         // Test approval
     }
 }
