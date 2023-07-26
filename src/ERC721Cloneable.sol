@@ -2,12 +2,16 @@
 
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "./TokenboundAccount.sol";
+import "./erc6551/ERC6551Registry.sol";
 import "@openzeppelin/contracts/proxy/Clones.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 
 contract ERC721Cloneable is ERC721Enumerable, Ownable {
+    ERC6551Registry public registry;
+    TokenboundAccount public accountImplementation;
+
     mapping(address => bool) private _admins;
     string private _baseURI_;
 
@@ -17,7 +21,9 @@ contract ERC721Cloneable is ERC721Enumerable, Ownable {
     // Token symbol
     string private _symbol;
 
-    constructor() ERC721("Name", "Symbol") Ownable() {}
+    constructor(address payable _accountImplementation) ERC721("", "") Ownable() {
+        accountImplementation = TokenboundAccount(_accountImplementation);
+    }
 
     function initialize(string memory name_, string memory symbol_, string memory uri, address admin) external {
         _baseURI_ = uri;
@@ -26,7 +32,24 @@ contract ERC721Cloneable is ERC721Enumerable, Ownable {
         _symbol = symbol_;
     }
 
-    function mint(address to, uint256 tokenId) public onlyAdmin {
+    function setRegistry(address registryAddress) external onlyOwner {
+        registry = ERC6551Registry(registryAddress);
+    }
+
+    function mint(address to, uint256 tokenId) public onlyAdmin returns (address payable account) {
+        // Deploy token account
+        account = payable(
+            registry.createAccount(
+                address(accountImplementation),
+                block.chainid,
+                address(this),
+                tokenId,
+                0, // salt
+                "" // init data
+            )
+        );
+
+        // Mint token
         _mint(to, tokenId);
     }
 

@@ -4,22 +4,28 @@ pragma solidity ^0.8.0;
 
 import "./ERC1155Cloneable.sol";
 import "./ERC721Cloneable.sol";
+import "./TokenboundAccount.sol";
 import "@openzeppelin/contracts/proxy/Clones.sol";
 
 contract CloneFactory {
     event CloneCreated(address clone, string name);
 
     address public tronicAdmin;
+
+    TokenboundAccount public accountImplementation;
+
     ERC721Cloneable public erc721Implementation;
     ERC1155Cloneable public erc1155implementation;
+
     mapping(uint256 => address) public erc1155Clones;
     mapping(uint256 => address) public erc721Clones;
+
     uint256 private _numERC1155Clones;
     uint256 private _numERC721Clones;
 
-    constructor(address _tronicAdmin) {
-        erc1155implementation = new ERC1155Cloneable();
-        erc721Implementation = new ERC721Cloneable();
+    constructor(address _tronicAdmin, address _erc721Implementation, address _erc1155implementation) {
+        erc1155implementation = ERC1155Cloneable(_erc1155implementation);
+        erc721Implementation = ERC721Cloneable(_erc721Implementation);
         tronicAdmin = _tronicAdmin;
     }
 
