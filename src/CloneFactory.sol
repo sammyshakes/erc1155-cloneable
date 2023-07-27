@@ -46,6 +46,11 @@ contract CloneFactory {
         _;
     }
 
+    modifier onlyTronicAdmin() {
+        require(msg.sender == tronicAdmin, "Caller is not Tronic admin");
+        _;
+    }
+
     function getERC1155Clone(uint256 index) external view returns (address) {
         return erc1155Clones[index];
     }
@@ -62,7 +67,11 @@ contract CloneFactory {
         return _numERC721Clones;
     }
 
-    function cloneERC1155(string memory uri, address admin) external onlyOwner returns (address erc1155cloneAddress) {
+    function cloneERC1155(string memory uri, address admin)
+        external
+        onlyTronicAdmin
+        returns (address erc1155cloneAddress)
+    {
         erc1155cloneAddress = Clones.clone(address(erc1155implementation));
         ERC1155Cloneable erc1155clone = ERC1155Cloneable(erc1155cloneAddress);
         erc1155clone.initialize(uri, admin, tronicAdmin);
@@ -75,7 +84,7 @@ contract CloneFactory {
 
     function cloneERC721(string memory name, string memory symbol, string memory uri, address admin)
         external
-        onlyOwner
+        onlyTronicAdmin
         returns (address erc721CloneAddress)
     {
         erc721CloneAddress = Clones.clone(address(erc721Implementation));
@@ -89,7 +98,7 @@ contract CloneFactory {
         emit CloneCreated(erc721CloneAddress, uri);
     }
 
-    function setTronicAdmin(address newAdmin) external {
+    function setTronicAdmin(address newAdmin) external onlyOwner {
         require(msg.sender == tronicAdmin, "Caller is not the tronicAdmin");
         tronicAdmin = newAdmin;
     }

@@ -43,6 +43,7 @@ contract ERC1155CloneTest is Test {
     }
 
     function testCreateClone() public {
+        vm.prank(tronicAdmin);
         address clone = factory.cloneERC1155("http://example.com1/", admin1);
         console.log("clone address: ", clone);
 
@@ -51,6 +52,7 @@ contract ERC1155CloneTest is Test {
     }
 
     function testMintClone() public {
+        vm.prank(tronicAdmin);
         address cloneAddress = factory.cloneERC1155("http://example.com2/", admin1);
 
         ERC1155Cloneable clone = ERC1155Cloneable(cloneAddress);
@@ -76,6 +78,7 @@ contract ERC1155CloneTest is Test {
 
     // Test admin roles
     function testAdminRoles() public {
+        vm.prank(tronicAdmin);
         address clone = factory.cloneERC1155("uri", admin1);
 
         ERC1155Cloneable cloneContract = ERC1155Cloneable(clone);
@@ -85,6 +88,7 @@ contract ERC1155CloneTest is Test {
 
     // Test new token types
     function testCreateTokenType() public {
+        vm.prank(tronicAdmin);
         address clone = factory.cloneERC1155("uri", admin1);
 
         vm.prank(admin1);
@@ -95,6 +99,7 @@ contract ERC1155CloneTest is Test {
 
     // Test setting fungible URI
     function testSetFungibleURI() public {
+        vm.prank(tronicAdmin);
         address clone = factory.cloneERC1155("uri", admin1);
 
         vm.prank(admin1);
@@ -105,6 +110,7 @@ contract ERC1155CloneTest is Test {
 
     // Test safe transfer
     function testSafeTransfer() public {
+        vm.prank(tronicAdmin);
         address clone = factory.cloneERC1155("uri", admin1);
 
         vm.prank(admin1);
@@ -123,6 +129,7 @@ contract ERC1155CloneTest is Test {
         string memory name = "MyToken";
         string memory symbol = "MTK";
 
+        vm.prank(tronicAdmin);
         address clone = factory.cloneERC721(name, symbol, "http://example.com/", admin1);
 
         ERC721CloneableTBA token = ERC721CloneableTBA(clone);
