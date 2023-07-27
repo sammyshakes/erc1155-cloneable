@@ -22,11 +22,24 @@ contract ERC1155CloneTest is Test {
     address public admin1 = address(0x5);
     address public tronicAdmin = address(0x6);
 
+    address payable public tbaAddress;
+
     function setUp() public {
         tbaCloneable = new TokenboundAccount();
         erc1155cloneable = new ERC1155Cloneable();
-        erc721cloneable = new ERC721CloneableTBA(payable(address(tbaCloneable)));
-        factory = new CloneFactory(tronicAdmin, address(erc721cloneable), address(erc1155cloneable));
+        erc721cloneable = new ERC721CloneableTBA();
+
+        tbaAddress = payable(address(tbaCloneable));
+
+        factory =
+        new CloneFactory(tronicAdmin, address(erc721cloneable), address(erc1155cloneable), address(tbaCloneable), tbaAddress);
+
+        //initialize erc721 and erc1155
+        erc721cloneable.initialize(
+            tbaAddress, address(this), "Original721", "OR721", "http://example721.com/", address(this)
+        );
+
+        erc1155cloneable.initialize("http://example1155.com/", address(this), address(this));
     }
 
     function testCreateClone() public {

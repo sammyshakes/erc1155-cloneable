@@ -13,6 +13,7 @@ contract CloneFactory {
     address public tronicAdmin;
 
     TokenboundAccount public accountImplementation;
+    ERC6551Registry public registry;
 
     ERC721CloneableTBA public erc721Implementation;
     ERC1155Cloneable public erc1155implementation;
@@ -23,18 +24,34 @@ contract CloneFactory {
     uint256 private _numERC1155Clones;
     uint256 private _numERC721Clones;
 
-    constructor(address _tronicAdmin, address _erc721Implementation, address _erc1155implementation) {
+    constructor(
+        address _tronicAdmin,
+        address _erc721Implementation,
+        address _erc1155implementation,
+        address _registry,
+        address _accountImplementation
+    ) {
         erc1155implementation = ERC1155Cloneable(_erc1155implementation);
         erc721Implementation = ERC721CloneableTBA(_erc721Implementation);
         tronicAdmin = _tronicAdmin;
+        registry = ERC6551Registry(_registry);
+        accountImplementation = TokenboundAccount(payable(_accountImplementation));
     }
 
     function getERC1155Clone(uint256 index) external view returns (address) {
         return erc1155Clones[index];
     }
 
+    function getERC721Clone(uint256 index) external view returns (address) {
+        return erc721Clones[index];
+    }
+
     function getNumERC1155Clones() external view returns (uint256) {
         return _numERC1155Clones;
+    }
+
+    function getNumERC721Clones() external view returns (uint256) {
+        return _numERC721Clones;
     }
 
     function cloneERC1155(string memory uri, address admin) external returns (address erc1155cloneAddress) {
@@ -54,7 +71,7 @@ contract CloneFactory {
     {
         erc721CloneAddress = Clones.clone(address(erc721Implementation));
         ERC721CloneableTBA erc721Clone = ERC721CloneableTBA(erc721CloneAddress);
-        erc721Clone.initialize(name, symbol, uri, admin);
+        erc721Clone.initialize(payable(address(accountImplementation)), address(registry), name, symbol, uri, admin);
 
         // Emit event, store clone, etc
         erc721Clones[_numERC721Clones] = erc721CloneAddress;

@@ -77,6 +77,10 @@ contract ERC1155Cloneable is ERC1155 {
         _admins[admin] = false;
     }
 
+    function isAdmin(address admin) external view returns (bool) {
+        return _admins[admin];
+    }
+
     function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
         return interfaceId == type(IERC1155).interfaceId || super.supportsInterface(interfaceId);
     }

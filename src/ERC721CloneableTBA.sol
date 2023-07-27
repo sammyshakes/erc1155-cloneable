@@ -21,19 +21,22 @@ contract ERC721CloneableTBA is ERC721Enumerable, Ownable {
     // Token symbol
     string private _symbol;
 
-    constructor(address payable _accountImplementation) ERC721("", "") Ownable() {
-        accountImplementation = TokenboundAccount(_accountImplementation);
-    }
+    constructor() ERC721("", "") Ownable() {}
 
-    function initialize(string memory name_, string memory symbol_, string memory uri, address admin) external {
+    function initialize(
+        address payable _accountImplementation,
+        address _registry,
+        string memory name_,
+        string memory symbol_,
+        string memory uri,
+        address admin
+    ) external {
+        accountImplementation = TokenboundAccount(_accountImplementation);
+        registry = ERC6551Registry(_registry);
         _baseURI_ = uri;
         _admins[admin] = true;
         _name = name_;
         _symbol = symbol_;
-    }
-
-    function setRegistry(address registryAddress) external onlyOwner {
-        registry = ERC6551Registry(registryAddress);
     }
 
     function mint(address to, uint256 tokenId) public onlyAdmin returns (address payable account) {
@@ -92,6 +95,10 @@ contract ERC721CloneableTBA is ERC721Enumerable, Ownable {
 
     function removeAdmin(address _admin) external onlyOwner {
         _admins[_admin] = false;
+    }
+
+    function isAdmin(address _admin) external view returns (bool) {
+        return _admins[_admin];
     }
 
     function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {

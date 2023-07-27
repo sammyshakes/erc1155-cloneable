@@ -20,21 +20,20 @@ contract TokenboundAccountTest is Test {
 
     function setUp() public {
         account = new TokenboundAccount();
-        token = new ERC721CloneableTBA(payable(address(account)));
-        brandERC1155 = new ERC1155Cloneable();
         registry = new ERC6551Registry();
+        token = new ERC721CloneableTBA();
+        brandERC1155 = new ERC1155Cloneable();
 
-        // set registry on erc721 cloneable
-        token.setRegistry(address(registry));
-
-        // new brand joins tronic anclones erc1155
-
-        // initialize brand erc1155
-        brandERC1155.initialize("http://example.com/", address(this), address(this));
-
-        //add admin to account
-        token.addAdmin(address(this));
-        brandERC1155.addAdmin(address(this));
+        // initialize erc721 and erc1155
+        token.initialize(
+            payable(address(account)),
+            address(registry),
+            "Original721",
+            "OR721",
+            "http://example721.com/",
+            address(this)
+        );
+        brandERC1155.initialize("http://example1155.com/", address(this), address(this));
     }
 
     function testMintingToken() public {
@@ -98,6 +97,15 @@ contract TokenboundAccountTest is Test {
 
         //user3 should also control tba
         assertEq(tbaAccount.owner(), user3);
+    }
+
+    function testProjectEntry() public {
+        //clone a brandErc1155
+        ERC1155Cloneable project = ERC1155Cloneable(Clones.clone(address(brandERC1155)));
+        console.log("project address: ", address(project));
+
+        //initialize project
+        project.initialize("http://project1.com/", address(this), address(this));
     }
 
     // function testGetAssets() public {
