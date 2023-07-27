@@ -8,6 +8,8 @@ import "./TokenboundAccount.sol";
 import "@openzeppelin/contracts/proxy/Clones.sol";
 
 contract CloneFactory {
+    address public owner;
+
     event CloneCreated(address clone, string name);
 
     address public tronicAdmin;
@@ -31,11 +33,17 @@ contract CloneFactory {
         address _registry,
         address _accountImplementation
     ) {
+        owner = msg.sender;
         erc1155implementation = ERC1155Cloneable(_erc1155implementation);
         erc721Implementation = ERC721CloneableTBA(_erc721Implementation);
         tronicAdmin = _tronicAdmin;
         registry = ERC6551Registry(_registry);
         accountImplementation = TokenboundAccount(payable(_accountImplementation));
+    }
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Caller is not owner");
+        _;
     }
 
     function getERC1155Clone(uint256 index) external view returns (address) {
@@ -54,7 +62,7 @@ contract CloneFactory {
         return _numERC721Clones;
     }
 
-    function cloneERC1155(string memory uri, address admin) external returns (address erc1155cloneAddress) {
+    function cloneERC1155(string memory uri, address admin) external onlyOwner returns (address erc1155cloneAddress) {
         erc1155cloneAddress = Clones.clone(address(erc1155implementation));
         ERC1155Cloneable erc1155clone = ERC1155Cloneable(erc1155cloneAddress);
         erc1155clone.initialize(uri, admin, tronicAdmin);
@@ -67,6 +75,7 @@ contract CloneFactory {
 
     function cloneERC721(string memory name, string memory symbol, string memory uri, address admin)
         external
+        onlyOwner
         returns (address erc721CloneAddress)
     {
         erc721CloneAddress = Clones.clone(address(erc721Implementation));

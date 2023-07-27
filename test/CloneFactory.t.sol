@@ -19,10 +19,15 @@ contract CloneFactoryTest is Test {
     address public user1 = address(0x1);
     address public user2 = address(0x2);
     address public user3 = address(0x3);
+    // new address for an unauthorized user
+    address public unauthorizedUser = address(0x4);
+
+    address public tronicOwner = address(0x5);
 
     address payable public tbaAddress;
 
     function setUp() public {
+        vm.startPrank(tronicOwner);
         account = new TokenboundAccount();
         erc721 = new ERC721CloneableTBA();
         erc1155 = new ERC1155Cloneable();
@@ -31,19 +36,19 @@ contract CloneFactoryTest is Test {
         tbaAddress = payable(address(account));
 
         //initialize erc721 and erc1155
-        erc721.initialize(
-            tbaAddress, address(registry), "Original721", "OR721", "http://example721.com/", address(this)
-        );
-        erc1155.initialize("http://example1155.com/", address(this), address(this));
+        erc721.initialize(tbaAddress, address(registry), "Original721", "OR721", "http://example721.com/", tronicOwner);
+        erc1155.initialize("http://example1155.com/", tronicOwner, tronicOwner);
 
-        factory = new CloneFactory(address(this), address(erc721), address(erc1155), address(registry), tbaAddress);
+        factory = new CloneFactory(tronicOwner, address(erc721), address(erc1155), address(registry), tbaAddress);
+        vm.stopPrank();
     }
 
     function testFactoryOwnership() public {
-        assertEq(factory.tronicAdmin(), address(this));
+        assertEq(factory.tronicAdmin(), tronicOwner);
     }
 
     function testChangeFactoryOwnership() public {
+        vm.prank(tronicOwner);
         // Change tronicAdmin to user1
         factory.setTronicAdmin(user1);
         assertEq(factory.tronicAdmin(), user1);
@@ -55,6 +60,7 @@ contract CloneFactoryTest is Test {
     }
 
     function testCloneERC1155() public {
+        vm.prank(tronicOwner);
         address clone1155Address = factory.cloneERC1155("http://clone1155.com/", user1);
 
         // clone should exist
@@ -70,6 +76,7 @@ contract CloneFactoryTest is Test {
     }
 
     function testCloneERC721() public {
+        vm.prank(tronicOwner);
         address clone721Address = factory.cloneERC721("Clone721", "CL721", "http://clone721.com/", user2);
 
         // clone should exist
@@ -100,5 +107,18 @@ contract CloneFactoryTest is Test {
 
         // verify uri
         assertEq(clone721.tokenURI(1), "http://clone721.com/1");
+    }
+
+    function testUnauthorizedCloning() public {
+        // Prank the VM to make the unauthorized user the msg.sender
+        vm.prank(unauthorizedUser);
+
+        // Expect the cloneERC1155 function to be reverted due to unauthorized access
+        vm.expectRevert();
+        factory.cloneERC1155("http://unauthorized1155.com/", unauthorizedUser);
+
+        // Expect the cloneERC721 function to be reverted due to unauthorized access
+        vm.expectRevert();
+        factory.cloneERC721("Unauthorized721", "UN721", "http://unauthorized721.com/", unauthorizedUser);
     }
 }
