@@ -73,25 +73,29 @@ contract TokenboundAccountTest is Test {
         // verify user1 owns token
         assertEq(token.ownerOf(1), user1);
 
-        // mint brand erc1155 token to tba
-        brandERC1155.mint(address(tbaAccount), 1, 1);
+        // mint brand erc1155 tokens to tba
+        brandERC1155.mint(address(tbaAccount), 1, 1000);
 
         //verify tba owns erc1155 token
-        assertEq(brandERC1155.balanceOf(address(tbaAccount), 1), 1);
+        assertEq(brandERC1155.balanceOf(address(tbaAccount), 1), 1000);
 
         //transfer erc1155 token to user2
         vm.startPrank(user1);
-        tbaAccount.transferToken(address(brandERC1155), 1, 1, user2);
+        tbaAccount.transferToken(address(brandERC1155), 1, 100, user2);
+
+        //verify user2 owns erc1155 token
+        assertEq(brandERC1155.balanceOf(user2, 1), 100);
+
+        //transfer token to another user
+        token.transferFrom(user1, user3, 1);
+
         vm.stopPrank();
 
-        // //transfer token to another user
-        // token.transferFrom(address(this), user1, 1);
+        //user3 should own token
+        assertEq(token.ownerOf(1), user3);
 
-        // //user1 should own token
-        // assertEq(token.ownerOf(1), user1);
-
-        // //user1 should also control tba
-        // assertEq(tbaAccount.owner(), user1);
+        //user3 should also control tba
+        assertEq(tbaAccount.owner(), user3);
     }
 
     // function testReceiveTokens(address tokenContract) public {
