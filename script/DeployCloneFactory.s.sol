@@ -4,24 +4,40 @@ pragma solidity ^0.8.13;
 // Imports
 import "forge-std/Script.sol";
 import "../src/CloneFactory.sol";
+import "../src/ERC721CloneableTBA.sol";
 
 contract DeployCloneFactory is Script {
     // Deployments
     CloneFactory public cloneFactory;
+    ERC721CloneableTBA public erc721;
+
+    address public tronicAddress = vm.envAddress("TRONIC_ADMIN_ADDRESS");
+    address public erc721Address = vm.envAddress("ERC721_CLONEABLE_ADDRESS");
+    address public erc1155Address = vm.envAddress("ERC1155_CLONEABLE_ADDRESS");
+    address public registryAddress = vm.envAddress("ERC6551_REGISTRY_ADDRESS");
+    address payable public tbaAddress = payable(vm.envAddress("TOKENBOUND_ACCOUNT_ADDRESS"));
+
+    string public baseURI = vm.envString("BASE_URI");
+    // string public erc115BaseURI = vm.envString("ERC1155_BASE_URI");
 
     function run() external {
-        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY_2");
+        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY_TRONIC_ADMIN");
+
+        erc721 = ERC721CloneableTBA(erc721Address);
 
         //Deploy Tronic Master Contracts
         vm.startBroadcast(deployerPrivateKey);
 
+        //initialize erc721
+        erc721.initialize(tbaAddress, registryAddress, "Original721", "OR721", baseURI, tronicAddress);
+
         // deploy new clone factory with environment variables
         cloneFactory = new CloneFactory(
-            vm.envAddress("TRONIC_ADMIN_ADDRESS"),
-            vm.envAddress("ERC721_CLONEABLE_ADDRESS"),
-            vm.envAddress("ERC1155_CLONEABLE_ADDRESS"),
-            vm.envAddress("ERC6551_REGISTRY_ADDRESS"),
-            payable(vm.envAddress("TOKENBOUND_ACCOUNT_ADDRESS"))
+            tronicAddress,
+            erc721Address,
+            erc1155Address,
+            registryAddress,
+            tbaAddress
         );
 
         vm.stopBroadcast();

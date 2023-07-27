@@ -15,7 +15,7 @@ contract Deploy is Script {
     ERC6551Registry public registry;
 
     function run() external {
-        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY_2");
+        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY_TRONIC_ADMIN");
 
         //Deploy Tronic Master Contracts
         vm.startBroadcast(deployerPrivateKey);
