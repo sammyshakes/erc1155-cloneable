@@ -39,6 +39,21 @@ contract CloneFactoryTest is Test {
         factory = new CloneFactory(address(this), address(erc721), address(erc1155), address(registry), tbaAddress);
     }
 
+    function testFactoryOwnership() public {
+        assertEq(factory.tronicAdmin(), address(this));
+    }
+
+    function testChangeFactoryOwnership() public {
+        // Change tronicAdmin to user1
+        factory.setTronicAdmin(user1);
+        assertEq(factory.tronicAdmin(), user1);
+
+        // Try to change tronicAdmin from a non-admin address should fail
+        vm.expectRevert();
+        vm.prank(user2);
+        factory.setTronicAdmin(user2);
+    }
+
     function testCloneERC1155() public {
         address clone1155Address = factory.cloneERC1155("http://clone1155.com/", user1);
 

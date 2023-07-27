@@ -79,4 +79,9 @@ contract CloneFactory {
 
         emit CloneCreated(erc721CloneAddress, uri);
     }
+
+    function setTronicAdmin(address newAdmin) external {
+        require(msg.sender == tronicAdmin, "Caller is not the tronicAdmin");
+        tronicAdmin = newAdmin;
+    }
 }
