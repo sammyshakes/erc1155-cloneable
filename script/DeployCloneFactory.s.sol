@@ -17,19 +17,17 @@ contract DeployCloneFactory is Script {
     address public registryAddress = vm.envAddress("ERC6551_REGISTRY_ADDRESS");
     address payable public tbaAddress = payable(vm.envAddress("TOKENBOUND_ACCOUNT_ADDRESS"));
 
-    string public baseURI = vm.envString("BASE_URI");
-    // string public erc115BaseURI = vm.envString("ERC1155_BASE_URI");
+    string public baseURI = vm.envString("ERC721_BASE_URI");
 
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY_TRONIC_ADMIN");
 
         erc721 = ERC721CloneableTBA(erc721Address);
 
-        //Deploy Tronic Master Contracts
         vm.startBroadcast(deployerPrivateKey);
 
         //initialize erc721
-        erc721.initialize(tbaAddress, registryAddress, "Original721", "OR721", baseURI, tronicAddress);
+        erc721.initialize(tbaAddress, registryAddress, "TrcClub", "TRC", baseURI, tronicAddress);
 
         // deploy new clone factory with environment variables
         cloneFactory = new CloneFactory(

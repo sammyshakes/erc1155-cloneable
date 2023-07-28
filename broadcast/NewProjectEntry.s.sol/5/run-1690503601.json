@@ -1,0 +1,43 @@
+{
+  "transactions": [
+    {
+      "hash": "0x81f09e1594b595157ba2e97a0fe317816cbcb7813549d2aa01c87befe6fd8b44",
+      "transactionType": "CALL",
+      "contractName": "CloneFactory",
+      "contractAddress": "0x6340E5F51799B17323e1Da683b0397022e80255d",
+      "function": "cloneERC1155(string,address):(address)",
+      "arguments": [
+        "https://ipfs.io/ipfs/QmQ69FLzJP875RbZS7GNpeWibuv2jZW3NFBi8DekyoUaf4",
+        "0x42C7eF198f8aC9888E2B1b73e5B71f1D4535194A"
+      ],
+      "transaction": {
+        "type": "0x02",
+        "from": "0x42c7ef198f8ac9888e2b1b73e5b71f1d4535194a",
+        "to": "0x6340e5f51799b17323e1da683b0397022e80255d",
+        "gas": "0x55d6e",
+        "value": "0x0",
+        "data": "0x6e2a9dc8000000000000000000000000000000000000000000000000000000000000004000000000000000000000000042c7ef198f8ac9888e2b1b73e5b71f1d4535194a000000000000000000000000000000000000000000000000000000000000004368747470733a2f2f697066732e696f2f697066732f516d513639464c7a4a5038373552625a5337474e70655769627576326a5a57334e4642693844656b796f556166340000000000000000000000000000000000000000000000000000000000",
+        "nonce": "0xbb",
+        "accessList": []
+      },
+      "additionalContracts": [
+        {
+          "transactionType": "CREATE",
+          "address": "0x16772Fa6F9a9bEf7a20eA93932F07b3D97aDe7fb",
+          "initCode": "3d602d80600a3d3981f3363d3d373d3d3d363d731aeafdcfb6b7e0322023fc58cf91b34d3076b21d5af43d82803e903d91602b57fd5bf3"
+        }
+      ],
+      "isFixedGasLimit": false
+    }
+  ],
+  "receipts": [],
+  "libraries": [],
+  "pending": [
+    "0x81f09e1594b595157ba2e97a0fe317816cbcb7813549d2aa01c87befe6fd8b44"
+  ],
+  "returns": {},
+  "timestamp": 1690503601,
+  "chain": 5,
+  "multi": false,
+  "commit": "5feee48"
+}

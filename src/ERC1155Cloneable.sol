@@ -6,6 +6,8 @@ import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 
 contract ERC1155Cloneable is ERC1155 {
     address public owner;
+    string private _name;
+    string private _symbol;
     mapping(address => bool) private _admins;
 
     // Token ID => URI mapping
@@ -23,13 +25,26 @@ contract ERC1155Cloneable is ERC1155 {
         _;
     }
 
-    function initialize(string memory _uri, address _admin, address _owner) external {
+    function initialize(string memory _uri, address _admin, address _owner, string memory name, string memory symbol)
+        external
+        onlyOwner
+    {
         _setURI(_uri);
         _admins[_admin] = true;
         owner = _owner;
+        _name = name;
+        _symbol = symbol;
     }
 
     mapping(uint256 => bool) private _tokenTypes;
+
+    function name() public view override returns (string memory) {
+        return _name;
+    }
+
+    function symbol() public view override returns (string memory) {
+        return _symbol;
+    }
 
     // Create new token type
     function createType(uint256 _id, string memory _uri) external onlyAdmin {
@@ -40,6 +55,14 @@ contract ERC1155Cloneable is ERC1155 {
 
         // Mark id as existing
         _tokenTypes[_id] = true;
+    }
+
+    // update token type
+    function updateType(uint256 _id, string memory _uri) external onlyAdmin {
+        require(_tokenTypes[_id], "Token type does not exist");
+
+        // Set URI with id suffix
+        _setURI(string(abi.encodePacked(_uri, _id)));
     }
 
     // Mint tokens of existing type
