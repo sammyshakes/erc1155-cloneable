@@ -56,18 +56,26 @@ contract ERC1155CloneTest is Test {
         ERC1155Cloneable clone = ERC1155Cloneable(cloneAddress);
 
         vm.startPrank(admin1);
-        clone.mint(user1, 1, 1);
-        assertEq(clone.uri(1), "http://example.com2/");
+
+        //create token types
+        clone.createType(1, "http://example.com2/1");
+        clone.createType(2, "http://example.com2/2");
+        clone.createType(3, "http://example.com2/3");
+
+        //mint tokens
+        clone.mintFungible(user1, 1, 1);
+
+        assertEq(clone.uri(1), "http://example.com2/1");
         assertEq(clone.balanceOf(user1, 1), 1);
 
-        clone.mint(user1, 2, 10);
-        clone.mint(user1, 3, 5);
+        clone.mintFungible(user1, 2, 10);
+        clone.mintFungible(user1, 3, 5);
 
         assertEq(clone.balanceOf(user1, 2), 10);
         assertEq(clone.balanceOf(user1, 3), 5);
 
-        clone.mint(user2, 1, 10);
-        clone.mint(user2, 2, 5);
+        clone.mintFungible(user2, 1, 10);
+        clone.mintFungible(user2, 2, 5);
 
         assertEq(clone.balanceOf(user2, 1), 10);
         assertEq(clone.balanceOf(user2, 2), 5);
@@ -115,15 +123,21 @@ contract ERC1155CloneTest is Test {
         vm.prank(tronicAdmin);
         address clone = factory.cloneERC1155("uri", admin1, "Clone1155", "CL1155");
 
-        vm.prank(admin1);
-        ERC1155Cloneable(clone).mint(user1, 1, 10);
+        ERC1155Cloneable clonedERC1155 = ERC1155Cloneable(clone);
+
+        vm.startPrank(admin1);
+        // create token type
+        clonedERC1155.createType(1, "http://example.com");
+
+        clonedERC1155.mintFungible(user1, 1, 10);
+        vm.stopPrank();
 
         // Approve transferFrom
         vm.prank(user1);
-        ERC1155Cloneable(clone).safeTransferFrom(user1, user2, 1, 5, "");
+        clonedERC1155.safeTransferFrom(user1, user2, 1, 5, "");
 
-        assertEq(ERC1155Cloneable(clone).balanceOf(user1, 1), 5);
-        assertEq(ERC1155Cloneable(clone).balanceOf(user2, 1), 5);
+        assertEq(clonedERC1155.balanceOf(user1, 1), 5);
+        assertEq(clonedERC1155.balanceOf(user2, 1), 5);
     }
 
     // Clone ERC721 token

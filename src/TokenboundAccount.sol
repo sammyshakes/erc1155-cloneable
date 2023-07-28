@@ -76,6 +76,32 @@ contract TokenboundAccount is SimpleERC6551Account, IERC721Receiver, IERC1155Rec
         return false;
     }
 
+    function transferToken(address token, uint256 id, uint256 amount, address to) external onlyOperatorOrOwner {
+        if (IERC165(token).supportsInterface(type(IERC1155).interfaceId)) {
+            IERC1155(token).safeTransferFrom(address(this), to, id, amount, "");
+        } else if (IERC165(token).supportsInterface(type(IERC721).interfaceId)) {
+            IERC721(token).transferFrom(address(this), to, id);
+
+            // Remove the token ID from the contract's list of owned tokens
+            uint256[] storage ownedTokens = erc721Tokens[token];
+            for (uint256 i = 0; i < ownedTokens.length; i++) {
+                if (ownedTokens[i] == id) {
+                    // Swap the token ID to remove with the last token ID in the array, then remove the last token ID
+                    ownedTokens[i] = ownedTokens[ownedTokens.length - 1];
+                    ownedTokens.pop();
+                    break;
+                }
+            }
+        } else if (IERC165(token).supportsInterface(type(IERC20).interfaceId)) {
+            IERC20(token).transfer(to, amount);
+        }
+    }
+
+    function setOperator(address _operator) external {
+        require(msg.sender == owner(), "Not owner");
+        operator = _operator;
+    }
+
     // function getAssets()
     //     external
     //     view
@@ -122,30 +148,4 @@ contract TokenboundAccount is SimpleERC6551Account, IERC721Receiver, IERC1155Rec
     //         erc1155Amounts
     //     );
     // }
-
-    function transferToken(address token, uint256 id, uint256 amount, address to) external onlyOperatorOrOwner {
-        if (IERC165(token).supportsInterface(type(IERC1155).interfaceId)) {
-            IERC1155(token).safeTransferFrom(address(this), to, id, amount, "");
-        } else if (IERC165(token).supportsInterface(type(IERC721).interfaceId)) {
-            IERC721(token).transferFrom(address(this), to, id);
-
-            // Remove the token ID from the contract's list of owned tokens
-            uint256[] storage ownedTokens = erc721Tokens[token];
-            for (uint256 i = 0; i < ownedTokens.length; i++) {
-                if (ownedTokens[i] == id) {
-                    // Swap the token ID to remove with the last token ID in the array, then remove the last token ID
-                    ownedTokens[i] = ownedTokens[ownedTokens.length - 1];
-                    ownedTokens.pop();
-                    break;
-                }
-            }
-        } else if (IERC165(token).supportsInterface(type(IERC20).interfaceId)) {
-            IERC20(token).transfer(to, amount);
-        }
-    }
-
-    function setOperator(address _operator) external {
-        require(msg.sender == owner(), "Not owner");
-        operator = _operator;
-    }
 }

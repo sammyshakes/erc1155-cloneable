@@ -76,7 +76,7 @@ contract CloneFactoryTest is Test {
 
         // mint token to user1
         vm.prank(user1);
-        clone1155.mint(user1, 1, 1);
+        clone1155.mintFungible(user1, 1, 1);
 
         // transfer token to user2
         vm.prank(user1);

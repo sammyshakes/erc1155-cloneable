@@ -30,10 +30,10 @@ contract NewUserEntry is Script {
         erc721.mint(tronicAddress, 1);
 
         //mint 100 level 1 premium tokens to tronic address
-        ERC1155Cloneable(erc1155Clone).mint(tbaAddress, 1, 100);
+        ERC1155Cloneable(erc1155Clone).mintFungible(tbaAddress, 1, 100);
 
         //mint 100 level 1 premium tokens to tronic address
-        ERC1155Cloneable(erc1155Clone).mint(tbaAddress, 2, 100);
+        ERC1155Cloneable(erc1155Clone).mintFungible(tbaAddress, 2, 100);
 
         vm.stopBroadcast();
     }

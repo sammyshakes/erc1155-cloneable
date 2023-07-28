@@ -6,6 +6,7 @@ import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 
 contract ERC1155Cloneable is ERC1155, Initializable {
+    uint256 public constant STARING_NFT_ID = 1000;
     address public owner;
     string public name;
     string public symbol;
@@ -42,42 +43,32 @@ contract ERC1155Cloneable is ERC1155, Initializable {
 
     mapping(uint256 => bool) private _tokenTypes;
 
-    // Create new token type
-    function createType(uint256 _id, string memory _uri) external onlyAdmin {
-        require(!_tokenTypes[_id], "Token type already exists");
+    // Create new fungible token type
+    function createFungibleType(uint256 _id, string memory _uri) external onlyAdmin {
+        require((bytes(_fungibleTokenURIs[id]).length == 0), "Token type already exists");
 
-        // Set URI with id suffix
-        _setURI(string(abi.encodePacked(_uri, _id)));
-
-        // Mark id as existing
-        _tokenTypes[_id] = true;
+        // Set URI
+        _fungibleTokenURIs[_id] = _uri;
     }
 
     // update token type
-    function updateType(uint256 _id, string memory _uri) external onlyAdmin {
-        require(_tokenTypes[_id], "Token type does not exist");
-
-        // Set URI with id suffix
-        _setURI(string(abi.encodePacked(_uri, _id)));
+    function setFungibleURI(uint256 id, string memory uri_) external onlyAdmin {
+        require((bytes(_fungibleTokenURIs[id]).length > 0), "Token type does not exists");
+        _fungibleTokenURIs[id] = uri_;
     }
 
-    // Mint tokens of existing type
-    function mintToken(uint256 id, uint256 amount) external onlyAdmin {
-        require(_tokenTypes[id], "Token type does not exist");
-
-        _mint(msg.sender, id, amount, "");
-    }
-
-    function mint(address to, uint256 id, uint256 amount) public onlyAdmin {
+    function mintFungible(address to, uint256 id, uint256 amount) public onlyAdmin {
+        require((bytes(_fungibleTokenURIs[id]).length > 0), "Token type does not exists");
         _mint(to, id, amount, "");
+    }
+
+    function mintNFT(address to, uint256 id) public onlyAdmin {
+        require((bytes(_fungibleTokenURIs[id]).length == 0), "Token type already exists");
+        _mint(to, id, 1, "");
     }
 
     function burn(address account, uint256 id, uint256 amount) public onlyAdmin {
         _burn(account, id, amount);
-    }
-
-    function setFungibleURI(uint256 id, string memory uri_) external onlyAdmin {
-        _fungibleTokenURIs[id] = uri_;
     }
 
     function uri(uint256 id) public view override returns (string memory) {
