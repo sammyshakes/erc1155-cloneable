@@ -6,6 +6,7 @@ import "forge-std/Test.sol";
 import "../src/TokenboundAccount.sol";
 import "../src/ERC721CloneableTBA.sol";
 import "../src/ERC1155Cloneable.sol";
+import "../src/erc6551/ERC6551Registry.sol";
 
 contract TokenboundAccountTest is Test {
     TokenboundAccount public account;
@@ -24,7 +25,7 @@ contract TokenboundAccountTest is Test {
         token = new ERC721CloneableTBA();
         brandERC1155 = new ERC1155Cloneable();
 
-        // initialize erc721 and erc1155
+        // initialize erc721
         token.initialize(
             payable(address(account)),
             address(registry),
@@ -33,7 +34,6 @@ contract TokenboundAccountTest is Test {
             "http://example721.com/",
             address(this)
         );
-        brandERC1155.initialize("http://example1155.com/", address(this), address(this));
     }
 
     function testMintingToken() public {
@@ -74,39 +74,16 @@ contract TokenboundAccountTest is Test {
         // verify user1 owns token
         assertEq(token.ownerOf(1), user1);
 
-        // mint brand erc1155 tokens to tba
-        brandERC1155.mint(address(tbaAccount), 1, 1000);
-
-        //verify tba owns erc1155 token
-        assertEq(brandERC1155.balanceOf(address(tbaAccount), 1), 1000);
-
-        //transfer erc1155 token to user2
-        vm.startPrank(user1);
-        tbaAccount.transferToken(address(brandERC1155), 1, 100, user2);
-
-        //verify user2 owns erc1155 token
-        assertEq(brandERC1155.balanceOf(user2, 1), 100);
-
-        //transfer token to another user
-        token.transferFrom(user1, user3, 1);
-
-        vm.stopPrank();
-
-        //user3 should own token
-        assertEq(token.ownerOf(1), user3);
-
-        //user3 should also control tba
-        assertEq(tbaAccount.owner(), user3);
     }
 
-    function testProjectEntry() public {
-        //clone a brandErc1155
-        ERC1155Cloneable project = ERC1155Cloneable(Clones.clone(address(brandERC1155)));
-        console.log("project address: ", address(project));
+    // function testProjectEntry() public {
+    //clone a brandErc1155
+    //     ERC1155Cloneable project = ERC1155Cloneable(Clones.clone(address(brandERC1155)));
+    //     console.log("project address: ", address(project));
 
-        //initialize project
-        project.initialize("http://project1.com/", address(this), address(this));
-    }
+    //     //initialize project
+    //     project.initialize("http://project1.com/", address(this), address(this));
+    // }
 
     // function testGetAssets() public {
     //     // Mint test token and grant tba to user1

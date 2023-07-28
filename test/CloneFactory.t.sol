@@ -7,6 +7,7 @@ import "../src/CloneFactory.sol";
 import "../src/TokenboundAccount.sol";
 import "../src/ERC721CloneableTBA.sol";
 import "../src/ERC1155Cloneable.sol";
+import "../src/erc6551/ERC6551Registry.sol";
 
 contract CloneFactoryTest is Test {
     CloneFactory public factory;
@@ -37,7 +38,6 @@ contract CloneFactoryTest is Test {
 
         //initialize erc721 and erc1155
         erc721.initialize(tbaAddress, address(registry), "Original721", "OR721", "http://example721.com/", tronicOwner);
-        erc1155.initialize("http://example1155.com/", tronicOwner, tronicOwner);
 
         factory = new CloneFactory(tronicOwner, address(erc721), address(erc1155), address(registry), tbaAddress);
         vm.stopPrank();
@@ -61,7 +61,7 @@ contract CloneFactoryTest is Test {
 
     function testCloneERC1155() public {
         vm.prank(tronicOwner);
-        address clone1155Address = factory.cloneERC1155("http://clone1155.com/", user1);
+        address clone1155Address = factory.cloneERC1155("http://clone1155.com/", user1, "Clone1155", "CL1155");
 
         // clone should exist
         assertNotEq(clone1155Address, address(0));
@@ -73,6 +73,15 @@ contract CloneFactoryTest is Test {
 
         // Check the clone can be retrieved using getERC1155Clone function
         assertEq(factory.getERC1155Clone(0), clone1155Address);
+
+        // mint token to user1
+        vm.prank(user1);
+        clone1155.mint(user1, 1, 1);
+
+        // transfer token to user2
+        vm.prank(user1);
+        clone1155.safeTransferFrom(user1, user2, 1, 1, "");
+
     }
 
     function testCloneERC721() public {
@@ -115,7 +124,7 @@ contract CloneFactoryTest is Test {
 
         // Expect the cloneERC1155 function to be reverted due to unauthorized access
         vm.expectRevert();
-        factory.cloneERC1155("http://unauthorized1155.com/", unauthorizedUser);
+        factory.cloneERC1155("http://unauthorized1155.com/", unauthorizedUser, "Clone1155", "CL1155");
 
         // Expect the cloneERC721 function to be reverted due to unauthorized access
         vm.expectRevert();

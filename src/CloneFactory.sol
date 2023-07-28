@@ -15,7 +15,7 @@ contract CloneFactory {
     address public tronicAdmin;
 
     TokenboundAccount public accountImplementation;
-    ERC6551Registry public registry;
+    IERC6551Registry public registry;
 
     ERC721CloneableTBA public erc721Implementation;
     ERC1155Cloneable public erc1155implementation;
@@ -37,7 +37,7 @@ contract CloneFactory {
         erc1155implementation = ERC1155Cloneable(_erc1155implementation);
         erc721Implementation = ERC721CloneableTBA(_erc721Implementation);
         tronicAdmin = _tronicAdmin;
-        registry = ERC6551Registry(_registry);
+        registry = IERC6551Registry(_registry);
         accountImplementation = TokenboundAccount(payable(_accountImplementation));
     }
 
@@ -67,14 +67,14 @@ contract CloneFactory {
         return _numERC721Clones;
     }
 
-    function cloneERC1155(string memory uri, address admin)
+    function cloneERC1155(string memory uri, address admin, string memory name, string memory symbol)
         external
         onlyTronicAdmin
         returns (address erc1155cloneAddress)
     {
         erc1155cloneAddress = Clones.clone(address(erc1155implementation));
         ERC1155Cloneable erc1155clone = ERC1155Cloneable(erc1155cloneAddress);
-        erc1155clone.initialize(uri, admin, tronicAdmin);
+        erc1155clone.initialize(uri, admin, name, symbol);
 
         erc1155Clones[_numERC1155Clones] = erc1155cloneAddress;
         _numERC1155Clones++;

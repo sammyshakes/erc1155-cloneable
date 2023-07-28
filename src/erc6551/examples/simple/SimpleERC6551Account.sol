@@ -14,11 +14,11 @@ contract SimpleERC6551Account is IERC165, IERC1271, IERC6551Account {
 
     receive() external payable {}
 
-    function executeCall(
-        address to,
-        uint256 value,
-        bytes calldata data
-    ) external payable returns (bytes memory result) {
+    function executeCall(address to, uint256 value, bytes calldata data)
+        external
+        payable
+        returns (bytes memory result)
+    {
         require(msg.sender == owner(), "Not token owner");
 
         ++nonce;
@@ -35,15 +35,7 @@ contract SimpleERC6551Account is IERC165, IERC1271, IERC6551Account {
         }
     }
 
-    function token()
-        external
-        view
-        returns (
-            uint256,
-            address,
-            uint256
-        )
-    {
+    function token() external view returns (uint256, address, uint256) {
         return ERC6551AccountLib.token();
     }
 
@@ -55,15 +47,10 @@ contract SimpleERC6551Account is IERC165, IERC1271, IERC6551Account {
     }
 
     function supportsInterface(bytes4 interfaceId) public pure returns (bool) {
-        return (interfaceId == type(IERC165).interfaceId ||
-            interfaceId == type(IERC6551Account).interfaceId);
+        return (interfaceId == type(IERC165).interfaceId || interfaceId == type(IERC6551Account).interfaceId);
     }
 
-    function isValidSignature(bytes32 hash, bytes memory signature)
-        external
-        view
-        returns (bytes4 magicValue)
-    {
+    function isValidSignature(bytes32 hash, bytes memory signature) external view returns (bytes4 magicValue) {
         bool isValid = SignatureChecker.isValidSignatureNow(owner(), hash, signature);
 
         if (isValid) {

@@ -3,17 +3,21 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
+import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 
-contract ERC1155Cloneable is ERC1155 {
+contract ERC1155Cloneable is ERC1155, Initializable {
     address public owner;
-    string private _name;
-    string private _symbol;
+    string public name;
+    string public symbol;
     mapping(address => bool) private _admins;
 
     // Token ID => URI mapping
     mapping(uint256 => string) private _fungibleTokenURIs;
 
-    constructor() ERC1155("") {}
+    constructor() ERC1155("") {
+      //disable initializable
+      _disableInitializers();
+    }
 
     modifier onlyOwner() {
         require(msg.sender == owner, "Only owner");
@@ -25,26 +29,17 @@ contract ERC1155Cloneable is ERC1155 {
         _;
     }
 
-    function initialize(string memory _uri, address _admin, address _owner, string memory name, string memory symbol)
-        external
-        onlyOwner
+    function initialize(string memory _uri, address _admin, string memory _name, string memory _symbol)
+        external initializer
     {
         _setURI(_uri);
         _admins[_admin] = true;
-        owner = _owner;
-        _name = name;
-        _symbol = symbol;
+        owner = msg.sender;
+        name = _name;
+        symbol = _symbol;
     }
 
     mapping(uint256 => bool) private _tokenTypes;
-
-    function name() public view override returns (string memory) {
-        return _name;
-    }
-
-    function symbol() public view override returns (string memory) {
-        return _symbol;
-    }
 
     // Create new token type
     function createType(uint256 _id, string memory _uri) external onlyAdmin {

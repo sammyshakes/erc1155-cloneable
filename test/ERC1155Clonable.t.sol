@@ -34,17 +34,16 @@ contract ERC1155CloneTest is Test {
         factory =
         new CloneFactory(tronicAdmin, address(erc721cloneable), address(erc1155cloneable), address(tbaCloneable), tbaAddress);
 
-        //initialize erc721 and erc1155
+        //initialize erc721
         erc721cloneable.initialize(
             tbaAddress, address(this), "Original721", "OR721", "http://example721.com/", address(this)
         );
 
-        erc1155cloneable.initialize("http://example1155.com/", address(this), address(this));
     }
 
     function testCreateClone() public {
         vm.prank(tronicAdmin);
-        address clone = factory.cloneERC1155("http://example.com1/", admin1);
+        address clone = factory.cloneERC1155("http://example.com1/", admin1, "Clone1155", "CL1155");
         console.log("clone address: ", clone);
 
         assertEq(ERC1155Cloneable(clone).uri(1), "http://example.com1/");
@@ -53,7 +52,7 @@ contract ERC1155CloneTest is Test {
 
     function testMintClone() public {
         vm.prank(tronicAdmin);
-        address cloneAddress = factory.cloneERC1155("http://example.com2/", admin1);
+        address cloneAddress = factory.cloneERC1155("http://example.com2/", admin1, "Clone1155", "CL1155");
 
         ERC1155Cloneable clone = ERC1155Cloneable(cloneAddress);
 
@@ -74,22 +73,26 @@ contract ERC1155CloneTest is Test {
         assertEq(clone.balanceOf(user2, 1), 10);
         assertEq(clone.balanceOf(user2, 2), 5);
         vm.stopPrank();
+
+        // transfer tokens from user1 to user2
+        vm.prank(user1);
+        clone.safeTransferFrom(user1, user2, 1, 1, "");
     }
 
     // Test admin roles
     function testAdminRoles() public {
         vm.prank(tronicAdmin);
-        address clone = factory.cloneERC1155("uri", admin1);
+        address clone = factory.cloneERC1155("uri", admin1, "Clone1155", "CL1155");
 
         ERC1155Cloneable cloneContract = ERC1155Cloneable(clone);
 
-        assertEq(cloneContract.owner(), tronicAdmin);
+        assertEq(cloneContract.isAdmin(admin1), true);
     }
 
     // Test new token types
     function testCreateTokenType() public {
         vm.prank(tronicAdmin);
-        address clone = factory.cloneERC1155("uri", admin1);
+        address clone = factory.cloneERC1155("uri", admin1, "Clone1155", "CL1155");
 
         vm.prank(admin1);
         ERC1155Cloneable(clone).createType(4, "http://example.com");
@@ -100,7 +103,7 @@ contract ERC1155CloneTest is Test {
     // Test setting fungible URI
     function testSetFungibleURI() public {
         vm.prank(tronicAdmin);
-        address clone = factory.cloneERC1155("uri", admin1);
+        address clone = factory.cloneERC1155("uri", admin1, "Clone1155", "CL1155");
 
         vm.prank(admin1);
         ERC1155Cloneable(clone).setFungibleURI(1, "http://fungible.com");
@@ -111,7 +114,7 @@ contract ERC1155CloneTest is Test {
     // Test safe transfer
     function testSafeTransfer() public {
         vm.prank(tronicAdmin);
-        address clone = factory.cloneERC1155("uri", admin1);
+        address clone = factory.cloneERC1155("uri", admin1, "Clone1155", "CL1155");
 
         vm.prank(admin1);
         ERC1155Cloneable(clone).mint(user1, 1, 10);

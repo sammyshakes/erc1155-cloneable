@@ -2,15 +2,14 @@
 
 pragma solidity ^0.8.0;
 
-import "./TokenboundAccount.sol";
-import "./erc6551/ERC6551Registry.sol";
-import "@openzeppelin/contracts/proxy/Clones.sol";
+import "./erc6551/interfaces/IERC6551Registry.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
+import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 
-contract ERC721CloneableTBA is ERC721Enumerable, Ownable {
-    ERC6551Registry public registry;
-    TokenboundAccount public accountImplementation;
+contract ERC721CloneableTBA is ERC721Enumerable, Ownable, Initializable {
+    IERC6551Registry public registry;
+    address public accountImplementation;
 
     mapping(address => bool) private _admins;
     string private _baseURI_;
@@ -30,9 +29,9 @@ contract ERC721CloneableTBA is ERC721Enumerable, Ownable {
         string memory symbol_,
         string memory uri,
         address admin
-    ) external {
-        accountImplementation = TokenboundAccount(_accountImplementation);
-        registry = ERC6551Registry(_registry);
+    ) external initializer {
+        accountImplementation = _accountImplementation;
+        registry = IERC6551Registry(_registry);
         _baseURI_ = uri;
         _admins[admin] = true;
         _name = name_;
@@ -43,7 +42,7 @@ contract ERC721CloneableTBA is ERC721Enumerable, Ownable {
         // Deploy token account
         account = payable(
             registry.createAccount(
-                address(accountImplementation),
+                accountImplementation,
                 block.chainid,
                 address(this),
                 tokenId,

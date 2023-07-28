@@ -11,6 +11,9 @@ contract NewProjectEntry is Script {
     CloneFactory public cloneFactory;
     ERC721CloneableTBA public erc721;
 
+    string public name = "Partner Clone ERC721";
+    string public symbol = "CL1155";
+
     address public tronicAddress = vm.envAddress("TRONIC_ADMIN_ADDRESS");
     address public cloneFactoryAddress = vm.envAddress("CLONE_FACTORY_ADDRESS");
 
@@ -24,7 +27,7 @@ contract NewProjectEntry is Script {
         vm.startBroadcast(deployerPrivateKey);
 
         //deploy partner clone erc1155
-        cloneFactory.cloneERC1155(erc115BaseURI, tronicAddress);
+        cloneFactory.cloneERC1155(erc115BaseURI, tronicAddress, name, symbol);
 
         vm.stopBroadcast();
     }

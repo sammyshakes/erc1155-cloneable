@@ -6,6 +6,7 @@ import "forge-std/Script.sol";
 import "../src/TokenboundAccount.sol";
 import "../src/ERC721CloneableTBA.sol";
 import "../src/ERC1155Cloneable.sol";
+import "../src/erc6551/ERC6551Registry.sol";
 
 contract Deploy is Script {
     // Deployments
