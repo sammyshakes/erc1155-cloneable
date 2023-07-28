@@ -4,21 +4,18 @@ pragma solidity ^0.8.0;
 
 import "./ERC1155Cloneable.sol";
 import "./ERC721CloneableTBA.sol";
-import "./TokenboundAccount.sol";
 import "@openzeppelin/contracts/proxy/Clones.sol";
 
 contract CloneFactory {
-    address public owner;
-
     event CloneCreated(address clone, string name);
 
-    address public tronicAdmin;
-
-    TokenboundAccount public accountImplementation;
     IERC6551Registry public registry;
-
     ERC721CloneableTBA public erc721Implementation;
     ERC1155Cloneable public erc1155implementation;
+
+    address public owner;
+    address public tronicAdmin;
+    address payable public accountImplementation;
 
     mapping(uint256 => address) public erc1155Clones;
     mapping(uint256 => address) public erc721Clones;
@@ -38,7 +35,7 @@ contract CloneFactory {
         erc721Implementation = ERC721CloneableTBA(_erc721Implementation);
         tronicAdmin = _tronicAdmin;
         registry = IERC6551Registry(_registry);
-        accountImplementation = TokenboundAccount(payable(_accountImplementation));
+        accountImplementation = payable(_accountImplementation);
     }
 
     modifier onlyOwner() {

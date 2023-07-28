@@ -15,8 +15,8 @@ contract ERC1155Cloneable is ERC1155, Initializable {
     mapping(uint256 => string) private _fungibleTokenURIs;
 
     constructor() ERC1155("") {
-      //disable initializable
-      _disableInitializers();
+        //disable initializable
+        _disableInitializers();
     }
 
     modifier onlyOwner() {
@@ -30,7 +30,8 @@ contract ERC1155Cloneable is ERC1155, Initializable {
     }
 
     function initialize(string memory _uri, address _admin, string memory _name, string memory _symbol)
-        external initializer
+        external
+        initializer
     {
         _setURI(_uri);
         _admins[_admin] = true;

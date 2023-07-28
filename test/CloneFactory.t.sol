@@ -81,7 +81,6 @@ contract CloneFactoryTest is Test {
         // transfer token to user2
         vm.prank(user1);
         clone1155.safeTransferFrom(user1, user2, 1, 1, "");
-
     }
 
     function testCloneERC721() public {

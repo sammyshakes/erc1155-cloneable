@@ -73,7 +73,6 @@ contract TokenboundAccountTest is Test {
 
         // verify user1 owns token
         assertEq(token.ownerOf(1), user1);
-
     }
 
     // function testProjectEntry() public {

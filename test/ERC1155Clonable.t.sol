@@ -38,7 +38,6 @@ contract ERC1155CloneTest is Test {
         erc721cloneable.initialize(
             tbaAddress, address(this), "Original721", "OR721", "http://example721.com/", address(this)
         );
-
     }
 
     function testCreateClone() public {
