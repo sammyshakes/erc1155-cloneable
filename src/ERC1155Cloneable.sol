@@ -45,7 +45,7 @@ contract ERC1155Cloneable is ERC1155, Initializable {
 
     // Create new fungible token type
     function createFungibleType(uint256 _id, string memory _uri) external onlyAdmin {
-        require((bytes(_fungibleTokenURIs[id]).length == 0), "Token type already exists");
+        require((bytes(_fungibleTokenURIs[_id]).length == 0), "Token type already exists");
 
         // Set URI
         _fungibleTokenURIs[_id] = _uri;

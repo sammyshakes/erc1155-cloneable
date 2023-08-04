@@ -17,11 +17,11 @@ contract CloneFactory {
     address public tronicAdmin;
     address payable public accountImplementation;
 
-    mapping(uint256 => address) public erc1155Clones;
-    mapping(uint256 => address) public erc721Clones;
-
     uint256 private _numERC1155Clones;
     uint256 private _numERC721Clones;
+    
+    mapping(uint256 => address) public erc1155Clones;
+    mapping(uint256 => address) public erc721Clones;
 
     constructor(
         address _tronicAdmin,

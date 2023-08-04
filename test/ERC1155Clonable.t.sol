@@ -58,9 +58,9 @@ contract ERC1155CloneTest is Test {
         vm.startPrank(admin1);
 
         //create token types
-        clone.createType(1, "http://example.com2/1");
-        clone.createType(2, "http://example.com2/2");
-        clone.createType(3, "http://example.com2/3");
+        clone.createFungibleType(1, "http://example.com2/1");
+        clone.createFungibleType(2, "http://example.com2/2");
+        clone.createFungibleType(3, "http://example.com2/3");
 
         //mint tokens
         clone.mintFungible(user1, 1, 1);
@@ -102,7 +102,7 @@ contract ERC1155CloneTest is Test {
         address clone = factory.cloneERC1155("uri", admin1, "Clone1155", "CL1155");
 
         vm.prank(admin1);
-        ERC1155Cloneable(clone).createType(4, "http://example.com");
+        ERC1155Cloneable(clone).createFungibleType(4, "http://example.com");
 
         // assertEq(ERC1155Cloneable(clone).uri(4), "http://example.com");
     }
@@ -112,8 +112,11 @@ contract ERC1155CloneTest is Test {
         vm.prank(tronicAdmin);
         address clone = factory.cloneERC1155("uri", admin1, "Clone1155", "CL1155");
 
-        vm.prank(admin1);
+        vm.startPrank(admin1);
+        // create token type
+        ERC1155Cloneable(clone).createFungibleType(1, "http://example.com");
         ERC1155Cloneable(clone).setFungibleURI(1, "http://fungible.com");
+        vm.stopPrank();
 
         assertEq(ERC1155Cloneable(clone).uri(1), "http://fungible.com");
     }
@@ -127,7 +130,7 @@ contract ERC1155CloneTest is Test {
 
         vm.startPrank(admin1);
         // create token type
-        clonedERC1155.createType(1, "http://example.com");
+        clonedERC1155.createFungibleType(1, "http://example.com");
 
         clonedERC1155.mintFungible(user1, 1, 10);
         vm.stopPrank();

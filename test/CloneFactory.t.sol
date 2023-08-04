@@ -74,13 +74,16 @@ contract CloneFactoryTest is Test {
         // Check the clone can be retrieved using getERC1155Clone function
         assertEq(factory.getERC1155Clone(0), clone1155Address);
 
+        //create token types
+        vm.startPrank(user1);
+        clone1155.createFungibleType(1,"http://clone1155.com/");
+
         // mint token to user1
-        vm.prank(user1);
         clone1155.mintFungible(user1, 1, 1);
 
         // transfer token to user2
-        vm.prank(user1);
         clone1155.safeTransferFrom(user1, user2, 1, 1, "");
+        vm.stopPrank();
     }
 
     function testCloneERC721() public {
